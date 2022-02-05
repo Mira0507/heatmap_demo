@@ -1,19 +1,9 @@
----
-title: "Heatmap demo"
-author: "Mira Sohn"
-output:
-    html_document:
-        keep_md: yes
-        toc: true
-        toc_float: true
-        toc_depth: 3
----
 
-```{r, include=FALSE}
-knitr::opts_chunk$set(
-    warning=FALSE,
-    message=FALSE)
-```
+# Heatmap demo 
+
+#### Mira Sohn 
+#### 2/5/2022
+
 
 
 This workflow is designed to practice data visualization using heatmap based on this tutorial:     https://jcoliver.github.io/learn-r/008-ggplot-dendrograms-and-heatmaps.html    
@@ -30,7 +20,8 @@ Links to package manuals:
     - [DT](https://rstudio.github.io/DT/)      
 
 
-```{r packages}
+
+```r
 library(ggplot2)   # plotting
 library(tidyverse) # data manipulation
 library(viridis)   # color palette
@@ -44,9 +35,8 @@ set.seed(5678)
 
 User variables include factor levels, color palette, font style/size, and so on. They can be moved to a separate configuration or wrapper file if you prefer to have them externally. I like to minimize hard-coded variables for fine-tuning the plots in the future.
 
-```{r user_variable}
 
-
+```r
 # Set user variables for heatmap
 heatmap.font <- 12
 heatmap.palette <- colorRampPalette(viridis::magma(7))(100)
@@ -60,8 +50,6 @@ anno.color <- list(Genotype=c(WT="#1b94a5", KO="#2dbace"))
 
 # Ratio between ggplot and dendrogram
 gg.dendro.ratio <- c(0.8, 0.2)
-
-
 ```
 
 
@@ -69,15 +57,22 @@ gg.dendro.ratio <- c(0.8, 0.2)
 
 Assume there are 20 top genes found in RNA-seq analysis. Imported data is log-transformed normalized read count table. It's been pre-processed to avoid additional data cleaning steps prior to plotting. 
 
-```{r import_data, results='asis'}
 
+```r
 # Import input data
 mtx <- read.csv("test.csv") %>%
   column_to_rownames("X")
 
 # Print the input count matrix
 DT::datatable(mtx)
+```
 
+```{=html}
+<div id="htmlwidget-632b6b3cfab91c142b87" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-632b6b3cfab91c142b87">{"x":{"filter":"none","vertical":false,"data":[["Gene1","Gene2","Gene3","Gene4","Gene5","Gene6","Gene7","Gene8","Gene9","Gene10","Gene11","Gene12","Gene13","Gene14","Gene15","Gene16","Gene17","Gene18","Gene19","Gene20"],[9.814272603,7.991757936,5.082347114,5.350782846,4.052764245,7.167979054,8.234950827,3.92379213,6.739815326,7.082559628,6.52847349,4.111505459,5.321444766,0.997557929,3.232619598,3.755532401,4.244832042,6.082189077,3.775688331,4.416455881],[9.88844422,7.9567479,4.797184253,5.412464465,4.188812133,7.1619137,8.180182012,3.618194943,6.382894445,7.095511653,6.268939636,3.890846459,5.421894309,0.799313341,3.321871756,4.104862027,4.480134608,6.133421641,4.172576472,4.365496904],[2.468299534,3.106131874,8.291111422,8.576584138,7.794963074,3.456202249,1.283903897,6.947398814,0.239202731,9.039192511,3.052313365,6.989251204,7.796407754,8.044446135,6.452629112,6.900186861,6.774722674,2.363880007,6.780055412,7.606753175],[1.117453147,3.514922672,8.371322672,8.839833881,7.441518031,3.285170015,1.117453147,6.906354352,1.945881997,8.935350393,2.700373612,7.829863189,7.929401396,7.856169283,6.292043104,6.692569056,6.656477598,1.794109506,6.458085789,7.17934474]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>WT_Cell_1<\/th>\n      <th>WT_Cell_2<\/th>\n      <th>KO_Cell_1<\/th>\n      <th>KO_Cell_2<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+```
+
+```r
 # Build input read count matrix:
 # psuedocount + 1 and log-transformation
 # conversion is needed for pheatmap() and dist() which only take matrix obj
@@ -91,8 +86,8 @@ mtx <- as.matrix(mtx)
 pheatmap is one of the most well-known package providing heatmap with dendrogram from hierarchical clustering of genes and samples. 
 
 
-```{r pheatmap, results='asis', fig.height=8, fig.width=8}
 
+```r
 # Use pheatmap() from pheatmap package
 
 # Build input metadata
@@ -120,9 +115,9 @@ heatmap1 <-
      fontsize=heatmap.font)
 
 heatmap1
-
-
 ```
+
+![](heatmap_files/figure-html/pheatmap-1.png)<!-- -->
 
 ## Create heatmap using ggplot2 and ggdendro packages
 
@@ -130,9 +125,8 @@ Built-in font styles are found here: http://www.cookbook-r.com/Graphs/Fonts/
 If you'd like to use diverse custom font styles, use font packages such as [extrafont](https://cran.r-project.org/web/packages/extrafont/).
 
 
-```{r ggplot2, results='asis', fig.height=8, width=8}
 
-
+```r
 # Use ggplot() from ggplot2 package & ggdendero
 
 
@@ -183,9 +177,9 @@ facet_grid(~ Genotype, scales="free_x", space="free_x")
 grid::grid.newpage()
 print(heatmap2, vp=grid::viewport(x=0.4, y=0.5, width=gg.dendro.ratio[1], height=1))
 print(dendro.plot, vp=grid::viewport(x=0.9, y=0.448, width=gg.dendro.ratio[2], height=0.871))
-
-
 ```
+
+![](heatmap_files/figure-html/ggplot2-1.png)<!-- -->
 
 Aligning the two graphs are the hardest part of this workflow. Consult the tutorial introduced above.
 
@@ -194,21 +188,20 @@ Aligning the two graphs are the hardest part of this workflow. Consult the tutor
 
 Individual output plots from `pheatmap()`, `ggplot()`, and `ggdendrogram()` are saved using `ggsave()` from the ggplot2 package. Here, I created `heatmap1` from `pheatmap()`, `heatmap2` from `ggplot()`, and `dendro.plot` from `ggdendrogram()`. 
 
-```{r save_individual, eval=TRUE}
 
+```r
 # Save individual plots
 ggsave("heatmap1.pdf", heatmap1, device="pdf")  # returns pdf format in my current directory
 ggsave("heatmap2.pdf", heatmap2, device="pdf")
 ggsave("dendro.pdf", dendro.plot, device="pdf", width=2)  # width=2 is set to limit width of dendrogram
-
 ```
 
 ## Save the ggplot-ggdendro aligned plot
 
 The aligned plots are saved using `pdf()` and `dev.off()`.
 
-```{r save_combined, eval=TRUE}
 
+```r
 # Save aligned plots
 pdf("aligned.heatmap.pdf", fonts=user.font, width=8, height=8)
 grid::grid.newpage()
@@ -217,13 +210,59 @@ print(dendro.plot, vp=grid::viewport(x=0.9, y=0.448, width=gg.dendro.ratio[2], h
 dev.off()
 ```
 
+```
+## quartz_off_screen 
+##                 2
+```
+
 
 ## Session info
 For reproducibility purposes, here is the output of `sessionInfo()` showing the
 versions of all packages used here.
 
-```{r sessioninfo, collapse=FALSE}
+
+```r
 sessionInfo()
+```
+
+```
+## R version 4.1.0 (2021-05-18)
+## Platform: x86_64-apple-darwin17.0 (64-bit)
+## Running under: macOS Catalina 10.15.7
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] DT_0.20           ggdendro_0.1.22   viridis_0.6.2     viridisLite_0.4.0
+##  [5] forcats_0.5.1     stringr_1.4.0     dplyr_1.0.7       purrr_0.3.4      
+##  [9] readr_2.1.1       tidyr_1.1.4       tibble_3.1.6      tidyverse_1.3.1  
+## [13] ggplot2_3.3.5    
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.7         lubridate_1.8.0    assertthat_0.2.1   digest_0.6.27     
+##  [5] utf8_1.2.2         R6_2.5.1           cellranger_1.1.0   backports_1.4.1   
+##  [9] reprex_2.0.1       evaluate_0.14      highr_0.9          httr_1.4.2        
+## [13] pillar_1.6.4       rlang_0.4.11       readxl_1.3.1       rstudioapi_0.13   
+## [17] jquerylib_0.1.4    rmarkdown_2.11     labeling_0.4.2     htmlwidgets_1.5.4 
+## [21] pheatmap_1.0.12    munsell_0.5.0      broom_0.7.10       compiler_4.1.0    
+## [25] modelr_0.1.8       xfun_0.29          pkgconfig_2.0.3    htmltools_0.5.2   
+## [29] tidyselect_1.1.1   gridExtra_2.3      fansi_0.5.0        crayon_1.4.1      
+## [33] tzdb_0.2.0         dbplyr_2.1.1       withr_2.4.2        MASS_7.3-54       
+## [37] grid_4.1.0         jsonlite_1.7.2     gtable_0.3.0       lifecycle_1.0.0   
+## [41] DBI_1.1.1          magrittr_2.0.1     scales_1.1.1       cli_3.1.0         
+## [45] stringi_1.7.6      farver_2.1.0       fs_1.5.0           xml2_1.3.3        
+## [49] bslib_0.3.0        ellipsis_0.3.2     generics_0.1.1     vctrs_0.3.8       
+## [53] RColorBrewer_1.1-2 tools_4.1.0        glue_1.4.2         crosstalk_1.2.0   
+## [57] hms_1.1.1          fastmap_1.1.0      yaml_2.2.1         colorspace_2.0-2  
+## [61] rvest_1.0.2        knitr_1.37         haven_2.4.3        sass_0.4.0
 ```
 
 
