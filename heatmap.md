@@ -118,8 +118,7 @@ heatmap1
 
 ## Create heatmap using ggplot2 and ggdendro packages
 
-Built-in font styles are found here: http://www.cookbook-r.com/Graphs/Fonts/      
-If you'd like to use diverse custom font styles, use font packages such as [extrafont](https://cran.r-project.org/web/packages/extrafont/).
+An important benefit of using ggplot2 is that it provides flexible font selection. Built-in font styles are found here: http://www.cookbook-r.com/Graphs/Fonts. If you're interested in custom font styles, check out font packages such as [extrafont](https://cran.r-project.org/web/packages/extrafont/).
 
 
 
